@@ -1,764 +1,837 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
- <title>Учебная платформа | Онлайн-обучение</title>
- <style>
- * {
- margin: 0;
- padding: 0;
- box-sizing: border-box;
- }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>UniUnpins | Онлайн-обучение</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
- :root {
- --bg: #faf9f6;
- --surface: #ffffff;
- --text: #2c2c2c;
- --text-secondary: #5c5c5c;
- --primary: #4a7c59;
- --primary-hover: #3a6347;
- --border: #e0dcd3;
- --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
- --admin-sidebar: #2c2c2c;
- --admin-text: #e0dcd3;
- --success: #7a9b7e;
- --warning: #d4a373;
- --danger: #c1666b;
- --radius: 18px;
- --transition: 0.25s ease;
- }
+        :root {
+            --bg: #faf9f6;
+            --surface: #ffffff;
+            --text: #2c2c2c;
+            --text-secondary: #5c5c5c;
+            --primary: #4a7c59;
+            --primary-hover: #3a6347;
+            --border: #e0dcd3;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --admin-sidebar: #2c2c2c;
+            --admin-text: #e0dcd3;
+            --success: #7a9b7e;
+            --warning: #d4a373;
+            --danger: #c1666b;
+            --radius: 18px;
+            --transition: 0.25s ease;
+        }
 
- body {
- font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, Roboto, sans-serif;
- background-color: var(--bg);
- color: var(--text);
- line-height: 1.6;
- min-height: 100vh;
- display: flex;
- flex-direction: column;
- font-weight: 400;
- }
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-weight: 400;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
 
- .navbar {
- background: rgba(255, 255, 255, 0.8);
- backdrop-filter: blur(12px);
- -webkit-backdrop-filter: blur(12px);
- border-bottom: 1px solid var(--border);
- padding: 0.8rem 2rem;
- display: flex;
- align-items: center;
- justify-content: space-between;
- flex-wrap: wrap;
- gap: 1rem;
- position: sticky;
- top: 0;
- z-index: 20;
- }
+        body.page-transition {
+            opacity: 0.4;
+        }
 
- .logo {
- display: flex;
- align-items: center;
- gap: 0.5rem;
- font-weight: 600;
- font-size: 1,4rem;
- letter-spacing: -0,2px;
- color: #2c2c2c;
- text-decoration: none;
- cursor: pointer;
- }
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(250, 249, 246, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
 
- .logo-icon {
- background: #d4e0d0;
- color: #4a7c59;
- width: 32px;
- height: 32px;
- border-radius: 12px;
- display: flex;
- align-items: center;
- justify-content: center;
- font-size: 1.1rem;
- font-weight: 600;
- border: 1px solid #bccdb5;
- }
- .nav-links {
- display: flex;
- align-items: center;
- gap: 2rem;
- font-weight: 500;
- }
+        .loader-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
- .nav-links a {
- text-decoration: none;
- color: var(--text-secondary);
- font-size: 0.95rem;
- transition: color var(--transition);
- cursor: pointer;
- border-bottom: 2px solid transparent;
- padding-bottom: 4px;
- }
+        .loader-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0dcd3;
+            border-top-color: #4a7c59;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
 
- .nav-links a:hover {
- color: var(--primary);
- border-bottom-color: #bccdb5;
- }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
- .nav-actions {
- display: flex;
- align-items: center;
- gap: 0.8rem;
- flex-wrap: wrap;
- }
+        .navbar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
 
- button,
- .btn {
- background: white;
- border: 1px solid var(--border);
- padding: 0.5rem 1.3rem;
- border-radius: 40px;
- font-weight: 500;
- font-size: 0.9rem;
- cursor: pointer;
- transition: all var(--transition);
- background: var(--surface);
- color: var(--text);
- display: inline-flex;
- align-items: center;
- gap: 0.3rem;
- box-shadow: 0 2px 4px rgba(0,0,0,0.02);
- }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: -0.2px;
+            color: #2c2c2c;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
- .btn-primary {
- background: #d4e0d0;
- border: 1px solid #bccdb5;
- color: #2c2c2c;
- box-shadow: 0 4px 8px rgba(74, 124, 89, 0.08);
- font-weight: 600;
- }
+        .logo-icon {
+            background: #d4e0d0;
+            color: #4a7c59;
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 1px solid #bccdb5;
+        }
 
- .btn-primary:hover {
- background: #c2d4bd;
- border-color: #a3b899;
- }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            font-weight: 500;
+        }
 
- .btn-outline:hover {
- border-color: #bccdb5;
- background: #f5f2eb;
- }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            transition: color var(--transition);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+        }
 
- .btn-success {
- background: #c2d4bd;
- border-color: #a3b899;
- color: #2c2c2c;
- font-weight: 600;
- }
+        .nav-links a:hover {
+            color: var(--primary);
+            border-bottom-color: #bccdb5;
+        }
 
- .btn-success:hover {
- background: #b0c7aa;
- }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
 
- .user-badge {
- background: #f0ede5;
- padding: 0.4rem 1.2rem;
- border-radius: 40px;
- font-weight: 600;
- color: #2c2c2c;
- display: flex;
- align-items: center;
- gap: 0.4rem;
- border: 1px solid var(--border);
- }
+        button,
+        .btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.3rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            background: var(--surface);
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
 
- .admin-switch {
- background: #f5ead5;
- border: 1px solid #d4c9a8;
- color: #5c4b3a;
- font-weight: 600;
- margin-left: 0.3rem;
- }
- .hidden {
- display: none !important;
- }
+        .btn-primary {
+            background: #d4e0d0;
+            border: 1px solid #bccdb5;
+            color: #2c2c2c;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.08);
+            font-weight: 600;
+        }
 
- .container {
- max-width: 1280px;
- margin: 0 auto;
- padding: 2rem 1.8rem;
- flex: 1;
- width: 100%;
- }
+        .btn-primary:hover {
+            background: #c2d4bd;
+            border-color: #a3b899;
+        }
 
- .welcome-screen {
- position: fixed;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- background: #f2efe4;
- display: flex;
- flex-direction: column;
- align-items: center;
- justify-content: center;
- z-index: 1000;
- color: #2c2c2c;
- transition: opacity 0.5s ease, visibility 0.5s ease;
- }
- .welcome-screen.fade-out {
- opacity: 0;
- visibility: hidden;
- }
+        .btn-outline:hover {
+            border-color: #bccdb5;
+            background: #f5f2eb;
+        }
 
- .welcome-screen h1 {
- font-size: 3rem;
- margin-bottom: 1rem;
- font-weight: 600;
- color: #4a7c59;
- }
+        .btn-success {
+            background: #c2d4bd;
+            border-color: #a3b899;
+            color: #2c2c2c;
+            font-weight: 600;
+        }
 
- .welcome-screen p {
- font-size: 1,3rem;
- margin-bottom: 2rem;
- цвет: #5c5c5c;
- }
+        .btn-success:hover {
+            background: #b0c7aa;
+        }
 
- .welcome-screen button {
- фон: белый;
- цвет: #2c2c2c;
- граница: 1px solid #bccdb5;
- отступ: 0,8rem 2,5rem;
- размер шрифта: 1,1rem;
- шрифт: 600;
- радиус: 40px;
- курсор: указатель;
- transition: all 0.2s;
- box-shadow: 0 4px 10px rgba(0,0,0,0.03);
- }
+        .user-badge {
+            background: #f0ede5;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #2c2c2c;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid var(--border);
+        }
 
- .welcome-screen button:hover {
- background: #f5f2eb;
- transform: scale(1.02);
- }
+        .admin-switch {
+            background: #f5ead5;
+            border: 1px solid #d4c9a8;
+            color: #5c4b3a;
+            font-weight: 600;
+            margin-left: 0.3rem;
+        }
 
- .hero {
- background: #f5f2eb;
- border-radius: var(--radius);
- padding: 3rem 2,2rem;
- margin-bottom: 2,5rem;
- text-align: center;
- border: 1px solid var(--border);
- box-shadow: 0 2px 8px rgba(0,0,0,0,0,02);
- }
+        .hidden {
+            display: none !important;
+        }
 
- .hero h1 {
- font-size: 2,8rem;
- font-weight: 600;
- letter-spacing: -0,3px;
- margin-bottom: 1rem;
- color: #2c2c2c;
- }
- .hero p {
- font-size: 1,2rem;
- color: var(--text-secondary);
- max-width: 600px;
- margin: 0 auto 2rem;
- }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.8rem;
+            flex: 1;
+            width: 100%;
+        }
 
- .course-grid {
- display: grid;
- grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
- gap: 1,8rem;
- margin: 2rem 0;
- }
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f2efe4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: #2c2c2c;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
 
- .course-card {
- background: var(--surface);
- border-radius: var(--radius);
- padding: 1,8rem;
- border: 1px solid var(--border);
- box-shadow: 0 2px 8px rgba(0,0,0,0.02);
- transition: all 0.2s;
- cursor: pointer;
- border-bottom: 3px solid transparent;
- }
+        .welcome-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
 
- .course-card:hover {
- transform: translateY(-3px);
- border-bottom-color: #bccdb5;
- box-shadow: 0 6px 14px rgba(0,0,0,0.04);
- }
+        .welcome-screen h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #4a7c59;
+        }
 
- .course-card h3 {
- margin-bottom: 0.8rem;
- font-size: 1.3rem;
- font-weight: 600;
- color: #2c2c2c;
- }
+        .welcome-screen p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            color: #5c5c5c;
+        }
 
- .course-card p {
- color: var(--text-secondary);
- font-size: 0,95rem;
- }
+        .welcome-screen button {
+            background: white;
+            color: #2c2c2c;
+            border: 1px solid #bccdb5;
+            padding: 0.8rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
 
- .footer {
- background: #f5f2eb;
- border-top: 1px solid var(--border);
- padding: 1,8rem 2rem;
- text-align: center;
- color: var(--text-secondary);
- font-size: 0,9rem;
- margin-top: 2rem;
- }
+        .welcome-screen button:hover {
+            background: #f5f2eb;
+            transform: scale(1.02);
+        }
 
- .admin-layout {
- display: flex;
- gap: 1,8rem;
- flex-wrap: wrap;
- }
+        .hero {
+            background: #f5f2eb;
+            border-radius: var(--radius);
+            padding: 3rem 2.2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
 
- .admin-sidebar {
- background: var(--admin-sidebar);
- color: var(--admin-text);
- border-radius: var(--radius);
- отступ: 1.8rem 1.2rem;
- ширина: 240 пикселей;
- дисплей: гибкий;
- направление изгиба: столбец;
- пробел: 1.2rem;
- }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            margin-bottom: 1rem;
+            color: #2c2c2c;
+        }
 
- . кнопка администратора на боковой панели { 
- фон: прозрачный;
- граница: сплошная 1px #4a4a4a;
- цвет: #cbcbcb;
- выравнивание текста: по левому краю; 
- вес шрифта: 500;
- отступ: 0.6rem 1rem;
- радиус границы: 14 пикселей;
- ширина: 100%;
- курсор: указатель;
- переход: всего 0.2 секунды;
- }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
 
- .администратор-кнопка боковой панели: наведите курсор { 
- фон: #3a3a3a;
- цвет: белый;
- цвет границы: # 6a6a6a;
- }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.8rem;
+            margin: 2rem 0;
+        }
 
- .администратор-главная {
- flex: 1;
- background: var(--surface);
- border-radius: var(--radius);
- padding: 1,8rem;
- border: 1px solid var(--border);
- }
+        .course-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.8rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
 
- .stats-grid {
- display: grid;
- grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
- gap: 1rem;
- margin-bottom: 2rem;
- }
+        .course-card:hover {
+            transform: translateY(-3px);
+            border-bottom-color: #bccdb5;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+        }
 
- .stat-card {
- background: #f5f2eb;
- padding: 1,2rem;
- border-radius: 16px;
- border: 1px solid var(--border);
- }
+        .course-card h3 {
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
 
- .stat-card strong {
- display: block;
- font-size: 0.85rem;
- color: var(--text-secondary);
- margin-bottom: 0.3rem;
- font-weight: 500;
- }
+        .course-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
 
- .stat-card span {
- font-size: 1,8rem;
- font-weight: 600;
- color: #2c2c2c;
- }
+        .footer {
+            background: #f5f2eb;
+            border-top: 1px solid var(--border);
+            padding: 1.8rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
 
- .auth-form {
- max-width: 420px;
- margin: 2rem auto;
- background: var(--surface);
- padding: 2,2rem;
- border-radius: var(--radius);
- border: 1px solid var(--border);
- box-shadow: 0 4px 14px rgba(0,0,0,0.03);
- }
+        .admin-layout {
+            display: flex;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+        }
 
- .auth-form h2 {
- margin-bottom: 1,8rem;
- font-weight: 600;
- font-size: 1,5rem;
- }
+        .admin-sidebar {
+            background: var(--admin-sidebar);
+            color: var(--admin-text);
+            border-radius: var(--radius);
+            padding: 1.8rem 1.2rem;
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
 
- .auth-form input {
- width: 100%;
- padding: 0.8rem 1rem;
- margin: 0.6rem 0 1rem;
- border: 1px solid var(--border);
- border-radius: 14px;
- font-size: 0.95rem;
- background: #faf9f6;
- transition: border 0.2s;
- }
+        .admin-sidebar button {
+            background: transparent;
+            border: 1px solid #4a4a4a;
+            color: #cbcbcb;
+            text-align: left;
+            font-weight: 500;
+            padding: 0.6rem 1rem;
+            border-radius: 14px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
- .auth-form input:focus {
- outline: none;
- border-color: #bccdb5;
- background: white;
- }
+        .admin-sidebar button:hover {
+            background: #3a3a3a;
+            color: white;
+            border-color: #6a6a6a;
+        }
 
- hr {
- margin: 1,5rem 0;
- border: 0,5px solid var(--border);
- }
+        .admin-main {
+            flex: 1;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.8rem;
+            border: 1px solid var(--border);
+        }
 
- .about-section {
- background: var(--surface);
- border-radius: var(--radius);
- padding: 2,5rem;
- border: 1px solid var(--border);
- box-shadow: 0 2px 8px rgba(0,0,0,0.02);
- margin-bottom: 2rem;
- }
- .about-section h2 {
- margin-bottom: 1.2rem;
- font-weight: 600;
- }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
 
- .about-section p, .about-section li {
- color: var(--text-secondary);
- }
+        .stat-card {
+            background: #f5f2eb;
+            padding: 1.2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
 
- .about-section ul {
- margin-left: 1,5rem;
- }
+        .stat-card strong {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
 
- .course-detail {
- background: var(--surface);
- border-radius: var(--radius);
- padding: 2,5rem;
- border: 1px solid var(--border);
- box-shadow: 0 2px 8px rgba(0,0,0,0,0,02);
- margin-bottom: 2rem;
- }
+        .stat-card span {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
 
- .breadcrumb {
- margin-bottom: 1,5rem;
- color: var(--text-secondary);
- font-size: 0,9rem;
- }
- .breadcrumb span {
- cursor: pointer;
- color: var(--primary);
- font-weight: 500;
- }
+        .auth-form {
+            max-width: 420px;
+            margin: 2rem auto;
+            background: var(--surface);
+            padding: 2.2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+        }
 
- .admin-table {
- width: 100%;
- border-collapse: collapse;
- margin-top: 1,5rem;
- }
+        .auth-form h2 {
+            margin-bottom: 1.8rem;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
 
- .admin-table th, .admin-table td {
- padding: 0,8rem;
- border-bottom: 1px solid var(--border);
- text-align: left;
- }
+        .auth-form input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            margin: 0.6rem 0 1rem;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            font-size: 0.95rem;
+            background: #faf9f6;
+            transition: border 0.2s;
+        }
 
- .admin-table th {
- background: #f5f2eb;
- font-weight: 600;
- }
+        .auth-form input:focus {
+            outline: none;
+            border-color: #bccdb5;
+            background: white;
+        }
 
- .module-item {
- background: #faf9f6;
- border: 1px solid var(--border);
- border-radius: 14px;
- padding: 1rem 1.2rem;
- margin-bottom: 0,7rem;
- cursor: pointer;
- transition: background 0,2s;
- }
+        hr {
+            margin: 1.5rem 0;
+            border: 0.5px solid var(--border);
+        }
 
- .module-item:hover {
- background: #f0ede5;
- }
+        .about-section {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            margin-bottom: 2rem;
+        }
 
- .lesson-content {
- background: #faf9f6;
- border-radius: 14px;
- padding: 1,5rem;
- margin-top: 1rem;
- border: 1px solid var(--border);
- }
+        .about-section h2 {
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
 
- .tabs {
- display: flex;
- gap: 0,5rem;
- margin-bottom: 1,5rem;
- border-bottom: 2px solid var(--border);
- padding-bottom: 0,5rem;
- }
- .tab {
- padding: 0,5rem 1,2rem;
- cursor: pointer;
- border-radius: 12px 12px 0 0;
- font-weight: 500;
- color: var(--text-secondary);
- }
+        .about-section p, .about-section li {
+            color: var(--text-secondary);
+        }
 
- .tab.active {
- color: var(--primary);
- border-bottom: 2px solid var(--primary);
- margin-bottom: -0,65rem;
- font-weight: 600;
- }
+        .about-section ul {
+            margin-left: 1.5rem;
+        }
 
- .progress-bar {
- width: 100%;
- height: 6px;
- background: #e0dcd3;
- border-radius: 6px;
- margin: 0,5rem 0;
- }
+        .course-detail {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            margin-bottom: 2rem;
+        }
 
- .progress-fill {
- высота: 100%;
- фон: #7a9b7e;
- радиус границы: 6 пикселей;
- }
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
 
- .сообщение об ошибке {
- color: var(--danger);
- font-size: 0,85rem;
- margin-top: 0,3rem;
- display: none;
- }
+        .breadcrumb span {
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 500;
+        }
 
- .error-message.show {
- display: block;
- }
- </style>
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .admin-table th {
+            background: #f5f2eb;
+            font-weight: 600;
+        }
+
+        .module-item {
+            background: #faf9f6;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.7rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .module-item:hover {
+            background: #f0ede5;
+        }
+
+        .lesson-content {
+            background: #faf9f6;
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            border-radius: 12px 12px 0 0;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: -0.65rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0dcd3;
+            border-radius: 6px;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #7a9b7e;
+            border-radius: 6px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
- <div id="welcomeScreen" class="welcome-screen">
- <h1>Добро пожаловать на учебную платформу</h1>
- <p>Ваш путь к знаниям начинается здесь</p>
- <button id="startExploring">Начать изучение</button>
- </div>
 
- <header id="mainNav" class="navbar"></header>
- <main id="appRoot" class="container"></main>
- <footer class="footer">
- 2026 Учебная платформа. Новосибирский колледж печати и информационных технологий. Все права защищены.
- </footer>
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-spinner"></div>
+    </div>
 
- <script>
- (function() {
- const State = {
- currentUser: null,
- currentPage: 'landing',
- theme: 'light',
- selectedCourse: null,
- adminSubPage: 'dashboard',
- enrolledCourses: [],
- currentLesson: null,
- welcomeShown: false,
- };
+    <div id="welcomeScreen" class="welcome-screen">
+        <h1>Добро пожаловать в UniUnpins</h1>
+        <p>Ваш путь к знаниям начинается здесь</p>
+        <button id="startExploring">Начать изучение</button>
+    </div>
 
- const usersDB = [
- { username: 'Ivan 123', password: '123', role: 'user' },
- { имя пользователя: 'admin', пароль: 'admin', роль: 'admin' }, 
- {имя пользователя: 'Danil', пароль: '123', роль: 'user' }, 
- ];
+    <header id="mainNav" class="navbar"></header>
+    <main id="appRoot" class="container"></main>
+    <footer class="footer">
+        2026 UniUnpins. Новосибирский колледж печати и информационных технологий. Все права защищены.
+    </footer>
 
- const coursesData = [
- {
- id: 'программирование',
- title: 'Программирование',
- desc: 'Изучите Python, JavaScript и веб-разработку с нуля до профессионального уровня.',
- fullDesc: 'Этот курс охватывает основы программирования на Python и JavaScript, создание веб-приложений, работу с базами данных и фреймворками. Вы научитесь писать чистый код, разрабатывать REST API и создавать полноценные проекты.',
- modules: [
- { title: 'Модуль 1. Введение в программирование', lessons: ['Основы алгоритмов', 'Переменные и типы данных', 'Условные конструкции', 'Циклы и итерации'] },
- { title: 'Модуль 2. Функции и структуры данных', lessons: ['Создание функций', 'Списки и кортежи', 'Словари и множества', 'Рекурсия'] },
- { title: 'Модуль 3. Объектно-ориентированное программирование', lessons: ['Классы и объекты', 'Наследование', 'Инкапсуляция', 'Полиморфизм'] },
- { title: 'Модуль 4. Веб-разработка', lessons: ['HTML и CSS основы', 'JavaScript для фронтенда', 'Node.js и Express', 'Работа с базами данных'] },
- ]
- },
- {
- id: 'design',
- title: 'Дизайн',
- desc: 'Освойте Figma, Photoshop и принципы UI/UX дизайна.',
- fullDesc: 'Курс по дизайну познакомит вас с основами композиции, типографики и теории цвета. Вы научитесь работать в Figma и Photoshop, создавать макеты интерфейсов, разрабатывать дизайн-системы и прототипировать веб-приложения.',
- modules: [
- { title: 'Модуль 1. Основы дизайна', lessons: ['Теория цвета', 'Типографика', 'Композиция', 'Сетки и направляющие'] },
- { title: 'Модуль 2. Figma', lessons: ['Интерфейс Figma', 'Создание макетов', 'Компоненты и стили', 'Прототипирование'] },
- { title: 'Модуль 3. Photoshop', lessons: ['Работа со слоями', 'Ретушь и коррекция', 'Создание баннеров', 'Экспорт графики'] },
- { title: 'Модуль 4. UI/UX проектирование', lessons: ['Исследование пользователей', 'Вайрфреймы', 'Дизайн-системы', 'Тестирование интерфейсов'] },
- ]
- },
- {
- id: 'video',
- title: 'Видеомонтаж',
- desc: 'Научитесь монтировать видео в Premiere Pro и DaVinci Resolve.',
- fullDesc: 'В этом курсе вы освоите видеомонтаж с нуля: от базовой нарезки до цветокоррекции и звукового дизайна. Работа в Premiere Pro и DaVinci Resolve, создание эффектов, переходов и экспорт в различных форматах.',
- modules: [
- { title: 'Модуль 1. Основы видеомонтажа', lessons: ['Интерфейс Premiere Pro', 'Импорт и организация материала', 'Базовый монтаж', 'Работа с временной шкалой'] },
- { title: 'Модуль 2. Переходы и эффекты', lessons: ['Видеопереходы', 'Анимация ключевых кадров', 'Работа с текстом', 'Эффекты и пресеты'] },
- { title: 'Модуль 3. Цветокоррекция и звук', lessons: ['Основы цветокоррекции', 'Работа с LUT', 'Звуковой дизайн', 'Сведение звука'] },
- { title: 'Модуль 4. Продвинутые техники', lessons: ['Многокамерный монтаж', 'Работа с DaVinci Resolve', 'Экспорт проектов', 'Создание портфолио'] },
- ]
- },
- ];
+    <script>
+        (function() {
+            const State = {
+                currentUser: null,
+                currentPage: 'landing',
+                theme: 'light',
+                selectedCourse: null,
+                adminSubPage: 'dashboard',
+                enrolledCourses: [],
+                currentLesson: null,
+                welcomeShown: false,
+            };
 
- функция saveState() { 
- localStorage.setItem('AppState', JSON.stringify(состояние));
- }
+            const usersDB = [
+                { username: 'Ivan 123', password: '123', role: 'user' },
+                { username: 'admin', password: 'admin', role: 'admin' },
+                { username: 'Danil', password: '123', role: 'user' },
+            ];
 
- function loadState() {
- const saved = localStorage.getItem('appState');
- if (saved) {
- try {
- const parsed = JSON.parse(saved);
- State.currentUser = parsed.currentUser || null;
- State.currentPage = parsed.currentPage || 'landing';
- State.theme = parsed.theme || 'light';
- State.selectedCourse = parsed.selectedCourse || null;
- State.adminSubPage = parsed.adminSubPage || 'панель управления';
- State.enrolledCourses = parsed.enrolledCourses || [];
- State.currentLesson = parsed.currentLesson || null;
- State.welcomeShown = parsed.welcomeShown || false;
- } catch (e) {}
- }
- }
+            const coursesData = [
+                {
+                    id: 'programming', title: 'Программирование',
+                    desc: 'Изучите Python, JavaScript и веб-разработку с нуля.',
+                    fullDesc: 'Этот курс охватывает основы программирования на Python и JavaScript, создание веб-приложений, работу с базами данных и фреймворками.',
+                    modules: [
+                        { title: 'Модуль 1. Введение', lessons: ['Основы алгоритмов', 'Переменные и типы данных', 'Условные конструкции', 'Циклы'] },
+                        { title: 'Модуль 2. Функции', lessons: ['Создание функций', 'Списки и кортежи', 'Словари', 'Рекурсия'] },
+                    ]
+                },
+                {
+                    id: 'design', title: 'Дизайн',
+                    desc: 'Освойте Figma, Photoshop и принципы UI/UX дизайна.',
+                    fullDesc: 'Курс по дизайну познакомит вас с основами композиции, типографики и теории цвета.',
+                    modules: [
+                        { title: 'Модуль 1. Основы', lessons: ['Теория цвета', 'Типографика', 'Композиция'] },
+                        { title: 'Модуль 2. Figma', lessons: ['Интерфейс Figma', 'Создание макетов', 'Компоненты'] },
+                    ]
+                },
+                {
+                    id: 'video', title: 'Видеомонтаж',
+                    desc: 'Научитесь монтировать видео в Premiere Pro и DaVinci Resolve.',
+                    fullDesc: 'В этом курсе вы освоите видеомонтаж с нуля.',
+                    modules: [
+                        { title: 'Модуль 1. Premiere', lessons: ['Интерфейс', 'Импорт', 'Монтаж'] },
+                        { title: 'Модуль 2. Эффекты', lessons: ['Переходы', 'Анимация', 'Текст'] },
+                    ]
+                },
+            ];
 
- function renderApp() {
- renderNavbar();
- renderPage();
- saveState();
- }
+            const loader = document.getElementById('loaderOverlay');
 
- function navigate(page, data = null) {
- State.currentPage = page;
- if (data) State.selectedCourse = data;
- else if (page !== 'courseDetail' && page !== 'myCourse') State.selectedCourse = null;
- if (page !== 'myCourse') State.currentLesson = null;
- renderApp();
- }
+            function showLoader(callback) {
+                if (!loader) { callback(); return; }
+                loader.classList.add('active');
+                document.body.classList.add('page-transition');
+                setTimeout(() => {
+                    callback();
+                    setTimeout(() => {
+                        loader.classList.remove('active');
+                        document.body.classList.remove('page-transition');
+                    }, 150);
+                }, 200);
+            }
 
- function loginUser(username, password) {
- const found = usersDB.find(u => u.username === username && u.password === password);
- if (found) {
- State.currentUser = { username: found.username, role: found.role };
- State.currentPage = (found.role === 'admin') ? 'admin' : 'dashboard';
- renderApp();
- return true;
- }
- return false;
- }
+            function saveState() {
+                localStorage.setItem('appState', JSON.stringify(State));
+            }
 
- function registerUser(username, password) {
- if (!username.trim() || !password.trim()) return { success: false, message: 'Заполните все поля' };
- if (usersDB.some(u => u.username === username)) return { success: false, message: 'Пользователь с таким именем уже существует' };
- usersDB.push({ username, password, role: 'user' });
- return { success: true };
- }
+            function loadState() {
+                const saved = localStorage.getItem('appState');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        State.currentUser = parsed.currentUser || null;
+                        State.currentPage = parsed.currentPage || 'landing';
+                        State.selectedCourse = parsed.selectedCourse || null;
+                        State.adminSubPage = parsed.adminSubPage || 'dashboard';
+                        State.enrolledCourses = parsed.enrolledCourses || [];
+                        State.currentLesson = parsed.currentLesson || null;
+                        State.welcomeShown = parsed.welcomeShown || false;
+                    } catch (e) {}
+                }
+            }
 
- function logout() {
- State.currentUser = null;
- State.currentPage = 'landing';
- State.enrolledCourses = [];
- State.selectedCourse = null;
- State.currentLesson = null;
- renderApp();
- }
+            function renderApp() {
+                renderNavbar();
+                renderPage();
+                saveState();
+            }
 
- function enrollCourse(courseId) {
- if (!State.enrolledCourses.includes(courseId)) State.enrolledCourses.push(courseId);
- navigate('myCourse', coursesData.find(c => c.id === courseId));
- }
+            function navigate(page, data = null) {
+                showLoader(() => {
+                    State.currentPage = page;
+                    if (data) State.selectedCourse = data;
+                    else if (page !== 'courseDetail' && page !== 'myCourse') State.selectedCourse = null;
+                    if (page !== 'myCourse') State.currentLesson = null;
+                    renderApp();
+                });
+            }
 
- function renderNavbar() {
- const nav = document.getElementById('mainNav');
- if (!nav) return;
- const user = State.currentUser;
- const isAdmin = user?.role === 'admin';
- let leftLinks = '', rightActions = '';
+            function loginUser(username, password) {
+                const found = usersDB.find(u => u.username === username && u.password === password);
+                if (found) {
+                    State.currentUser = { username: found.username, role: found.role };
+                    State.currentPage = (found.role === 'admin') ? 'admin' : 'dashboard';
+                    renderApp();
+                    return true;
+                }
+                return false;
+            }
 
- if (!user) {
- leftLinks = `<a class="nav-link" data-page="landing">Главная</a><a class="nav-link" data-page="courses">Курсы</a><a class="nav-link" data-page="about">О платформе</a>`;
- rightActions = `<button class="btn-outline" id="btnLoginNav">Войти</button><button class="btn-primary" id="btnRegisterNav">Регистрация</button>`;
- } else {
- leftLinks = isAdmin ? `<a class="nav-link" data-page="admin">Dashboard</a><a class="nav-link" data-page="admin">Пользователи</a><a class="nav-link" data-page="admin">Курсы</a><a class="nav-link" data-page="admin">Аналитика</a>` : `<a class="nav-link" data-page="dashboard">Dashboard</a><a class="nav-link" data-page="courses">Курсы</a><a class="nav-link" data-page="about">О платформе</a>`;
- rightActions = `<span class="user-badge">${user.username}</span>${!isAdmin ? '<button class="admin-switch" id="btnToAdmin">Админ</button>' : ''}${isAdmin ? '<button class="btn-outline" id="btnToUser">Пользователь</button>' : ''}<button class="btn-outline" id="btnLogout">Выйти</button>`;
- }
+            function registerUser(username, password) {
+                if (!username.trim() || !password.trim()) return { success: false, message: 'Заполните все поля' };
+                if (usersDB.some(u => u.username === username)) return { success: false, message: 'Пользователь уже существует' };
+                usersDB.push({ username, password, role: 'user' });
+                return { success: true };
+            }
 
- nav.innerHTML = `<div class="logo"><span class="logo-icon">U</span>UniUngins</div><div class="nav-links">${leftLinks}</div><div class="nav-actions">${rightActions}</div>`;
- document.querySelectorAll('.навигационная ссылка').forEach(el => el.addEventListener('click', e => { e.preventDefault(); const p = el.dataset.page; если (p === 'администратор') пользователь?.роль === 'администратор' ? (State.adminSubPage='панель управления', навигация('администратор')) : навигация ('вход'); иначе навигация(p); }));
- документ.querySelector('.logo')?.addEventListener('click', e => { e.preventDefault(); Состояние.CurrentUser ? навигация(State.CurrentUser.role==='администратор'?'admin':'панель мониторинга'): навигация ('посадка'); }); 
- если (!пользователь) {
- document.getElementById('btnLoginNav')?.addEventListener('click', () => navigate('login'));
- document.getElementById('btnRegisterNav')?.addEventListener('click', () => navigate('register'));
- } else {
- document.getElementById('btnLogout')?.addEventListener('click', logout);
- document.getElementById('btnToAdmin')?.addEventListener('click', () => { State.currentUser.role='admin'; navigate('admin'); });
- document.getElementById('btnToUser')?.addEventListener('click', () => { State.currentUser.role='user'; navigate('dashboard'); });
- }
- }
+            function logout() {
+                State.currentUser = null;
+                State.currentPage = 'landing';
+                State.enrolledCourses = [];
+                State.selectedCourse = null;
+                State.currentLesson = null;
+                renderApp();
+            }
 
- function renderPage() {
- const root = document.getElementById('appRoot');
- if (!root) return;
- const page = State.currentPage;
- if (!State.currentUser && (page==='dashboard'||page==='admin'||page==='myCourse')) { navigate('login'); return; }
- switch(page) {
- case 'landing': renderLanding(root); break;
- case 'dashboard': renderDashboard(root); break;
- case 'courses': renderCourses(root); break;
- case 'courseDetail': renderCourseDetail(root); break;
- case 'myCourse': renderMyCourse(root); break;
- case 'about': renderAbout(root); break;
- case 'admin': renderAdmin(root); break;
- case 'login': renderLogin(root); break;
- case 'register': renderRegister(root); break;
- default: renderLanding(root);
- }
- }
+            function enrollCourse(courseId) {
+                if (!State.enrolledCourses.includes(courseId)) State.enrolledCourses.push(courseId);
+                navigate('myCourse', coursesData.find(c => c.id === courseId));
+            }
 
- function renderLanding(c) { c.innerHTML = `<div class="hero"><h1>Учитесь новому каждый день</h1><p>Получите доступ к сотням курсов по программированию, дизайну и видеомонтажу. Начните бесплатно прямо сейчас.</p><div style="display:flex; gap:1rem; justify-content:center;"><button class="btn-primary" id="heroStart">Начать бесплатно</button><button class="btn-outline" id="heroLogin">Войти</button></div></div><div class="course-grid">${coursesData.map(c=>`<div class="course-card" data-course="${c.id}"><h3>${c.title}</h3><p>${c.desc}</p></div>`).join('')}</div>`; document.getElementById('heroStart')?.addEventListener('click', ()=>навигация('register')); document.getElementById('heroLogin')?.addEventListener('click', ()=>навигация('login')); document.querySelectorAll('.course-card').forEach(card=>card.addEventListener('click', ()=>{const id=card.dataset.course; navigate('courseDetail', coursesData.find(c=>c.id===id));})); }
- function renderDashboard(c) { const u = State.currentUser; c.innerHTML = `<h2 style="margin-bottom:1.5rem;">Добро пожаловать, ${u?.username||'Пользователь'}</h2><button class="btn-primary" id="startLearning" style="margin-bottom:2rem;">Начать обучение</button>${State.enrolledCourses.длина?`<h3 style="margin-bottom:1rem;">Мои курсы</h3><div class="course-grid">${State.enrolledCourses.map(id=>{const co=coursesData.find(x=>x.id===id); вернуть co?`<div class="карточка курса" data-course="${co.id }"><h3>${co.title}</h3><p>${co.desc}</p><div class="индикатор выполнения"><div class="progress-fill" style="ширина:25%;"></div></div><small>Прогресс: 25%</small></div>`:";}).join(")}</div>`:"}<h3 style="поле: 1.5rem 0 1rem; ">Доступные курсы</h3><div class="course-grid">${coursesData.map(c=>`<div class="course-card" data-course="${c.id }"><h3>${c.title}</h3><p>${c.desc}</p></div>`).join(")}</div>`; document.getElementById('startLearning')?.addEventListener('click', ()=>navigate('courses')); document.querySelectorAll('.course-card').forEach(card=>card.addEventListener('click', ()=>{const id=card.dataset.course; const co=coursesData.find(c=>c.id===id); State.enrolledCourses.includes(id)?navigate('myCourse',co):navigate('courseDetail',co);})); }
- функция renderCourses(c) { c.innerHTML = `<h2 style="margin-bottom:1.5rem;">Каталог курсов</h2><div class="course-grid">${coursesData.map(c=>'<div class="course-card" data-course="${c.id }"><h3>${c.title}</h3><p>${c.desc}</p><button class="btn-outline" style="margin-top:1rem;">Подробнее</button></div>').присоединиться(")}`/div>'; документ.querySelectorAll('.course-card').forEach(card=>card.addEventListener('click', ()=>{const id=card.dataset.course; navigate('courseDetail', coursesData.find(c=>c.id===id));})); }
- функция renderCourseDetail(c) { const co = State.selectedCourse; if(!co) { navigate('курсы'); return; } c.innerHTML = `<div class="breadcrumb"><span data-page="landing">Главная</span> / <span data-page="курсы">Курсы</span> / ${co.title}</div><div class="подробности курса"><h2>${co.title}</h2><p style ="размер шрифта: 1.1rem; поле:1.5rem 0;">${co.fullDesc}</p><h3 style="поле: 1.5rem 0, 1rem;">Программа курса</h3><div class="список модулей">${co.modules.map(m=>`<div class="модуль-элемент"><h4>${m.title}</h4><p>${m.уроки.length} уроков</p></div>`).join('')}</div><div style="margin-top:1.5rem;"><button class="btn-primary" id="enrollBtn">Записаться на курс</button><button class="btn-outline" style="margin-left:0.5rem;" id="backToCourses">Назад к курсам</button></div></div>`; document.querySelectorAll('.breadcrumb span').forEach(s=>s.addEventListener('click', ()=>navigate(s.dataset.page))); document.getElementById('Обратные курсы')?.addEventListener('click', ()=>navigate('курсы')); document.getElementById('enrollBtn')?.addEventListener('click', ()=> зарегистрироваться на курс(co.id)); }
- функция renderMyCourse(c) { const co = State.selectedCourse; if(!co) { navigate('панель управления'); return; } const lesson = State.currentLesson; c.innerHTML = `<div class="breadcrumb"><span data-page="панель управления">Панель управления</span> / ${co.title}</div><div class="course-detail"><h2>${co.title}</h2><div class="tabs" ><div class="вкладка ${!lesson?'active':''}" id="tabProgram">Программа</div>${lesson?'<div class="tab active" id="tabLesson">Материал урока</div>':"}</div><div id="tabContent"></div></div>`; const tc = document.getElementById('tabContent'); if(!tc) return; if(!урок) { tc.innerHTML = `<div class="module-list">${co.modules.map((m,mi)=>`<h4 style="margin-top:1rem;">${m.title}</h4>${m.lessons.map((l,li)=>`<div class="модуль-элемент урока-ссылка" data-module="${mi}" data-lesson="${li}"><p>${l}</p></div>`).присоединиться(")}`).присоединиться(")}</div>`; документ.querySelectorAll('.ссылка на урок').forEach(el=>el.addEventListener('click', ()=>{State.currentLesson={модуль:parseInt(el.dataset.module),урок:parseInt(el.dataset.lesson)}; renderApp();})); } else { const mod = co.modules[урок.module]; const файлы = mod.lessons[урок.lesson]; tc.innerHTML = `<button class="btn-outline" id="backToProgram" style="margin-bottom:1rem;">Назад к программе</button><div class="lesson-content"><h4>${mod.title} — ${les}</h4><p><strong>Теоретический материал</strong></p><p>В этом уроке рассматриваются ключевые концепции и практические примеры по теме "${les}".</p><p><strong>Основные темы:</strong></p><ul><li>Введение в тему</li><li>Практические примеры</li><li>Типичные ошибки</li><li>Рекомендации</li></ul><p><strong>Практическое задание:</strong></p><p>Выполните задание для закрепления.</p><button class="btn-success" id="markDone">Отметить как пройденное</button></div>`; document.getElementById('backToProgram')?.addEventListener('click', ()=>{State.currentLesson=null; renderApp();}); document.getElementById('markDone')?.addEventListener('click', ()=>alert('Урок отмечен!')); } document.getElementById('tabProgram')?.addEventListener('click', ()=>{State.currentLesson=null; renderApp();}); }
- function renderAbout(c) { c.innerHTML = `<div class="about-section"><h2>О платформе</h2><p>Учебная платформа создана для предоставления качественного онлайн-образования в сфере информационных технологий.</p><p>Наша миссия — сделать IT-образование доступным для каждого.</p><p><strong>Возможности:</strong></p><ul><li>Доступ 24/7</li><li>Практические задания</li><li>Сертификаты</li></ul></div><div class="about-section"><h2>Контакты</h2><p>Новосибирский колледж печати и информационных технологий</p><p>Email: info@edu-platform.ru</p></div>`; }
- function renderAdmin(c) { const sub = State.adminSubPage||'dashboard'; c.innerHTML = `<div class="admin-layout"><div class="admin-sidebar"><h3 style="color:white;">Админ панель</h3><button data-sub="dashboard">Dashboard</button><button data-sub="users">Пользователи</button><button data-sub="courses">Курсы</button><button data-sub="analytics">Аналитика</button><button data-sub="activity">Activity</button></div><div class="admin-main" id="adminContent"></div></div>`; const ac = document.getElementById('adminContent'); if(!ac) return; switch(sub) { case 'dashboard': ac.innerHTML=`<h2>Панель управления</h2><div class="stats-grid"><div class="stat-card"><strong>Пользователи</strong><span>${usersDB.length}</span></div><div class="stat-card"><strong>Активные</strong><span>3</span></div><div class="stat-card"><strong>Курсы</strong><span>${coursesData.length}</span></div><div class="stat-card"><strong>Рост</strong><span>+12%</span></div></div><div style="background:#f5f2eb;padding:1.5rem;border-radius:14px;"><h4>Platform Health</h4><p>Все системы работают нормально.</p></div>`; break; case 'users': ac.innerHTML=`<h2>Пользователи</h2><table class="admin-table"><tr><th>Имя</th><th>Роль</th><th></th></tr>${usersDB.map(u=>`<tr><td>${u.username}</td><td>${u.role}</td><td><button class="btn-outline">Ред.</button></td></tr>`).join('')}</table>`; break; case 'courses': ac.innerHTML=`<h2>Курсы</h2><table class="admin-table"><tr><th>Название</th><th>Описание</th><th></th></tr>${coursesData.map(c=>`<tr><td>${c.title}</td><td>${c.desc}</td><td><button class="btn-outline">Ред.</button></td></tr>`).join('')}</table>`; break; case 'analytics': ac.innerHTML=`<h2>Аналитика</h2><div class="stats-grid"><div class="stat-card"><strong>Просмотры</strong><span>12,345</span></div></div>`; break; case 'activity': ac.innerHTML=`<h2>Активность</h2><ul><li>Ivan 123 начал курс</li><li>Danil завершил модуль</li></ul>`; break; } document.querySelectorAll('.admin-кнопка боковой панели').forEach(b=>b.addEventListener('click', ()=>{State.adminSubPage=b.dataset.sub; renderApp();})); }
- function renderLogin(c) { c.innerHTML = `<div class="auth-form"><h2>Вход</h2><input id="loginUsername" placeholder="Логин"><input id="loginPassword" type="password" placeholder="Пароль"><div class="error-message" id="loginError"></div><button class="btn-primary" id="loginSubmit" style="width:100%;">Войти</button><p style="margin-top:1rem;">Нет аккаунта? <a id="toRegister" style="color:var(--primary);cursor:указатель;">Регистрация</a></p></div>`; document.getElementById('loginSubmit').addEventListener('click', ()=>{const u=document.getElementById('loginUsername').value.trim(); const p=document.getElementById('loginPassword').value; const err=document.getElementById('LoginError'); if(!u||!p){err.textContent='Введите данные'; err.classList.add('показать'); return;} if(!LoginUser(u,p)){err.textContent='Неверные данные'; err.classList.add('показать');} else err.classList.remove('показать');}); document.getElementById('зарегистрировать' ).addEventListener('click', ()=>навигация('register')); }
- function renderRegister(c) { c.innerHTML = `<div class="auth-form"><h2>Регистрация</h2><input id="regUsername" placeholder="Логин"><input id="regPassword" type="password" placeholder="Пароль"><div class="error-message" id="regError"></div><button class="btn-primary" id="regSubmit" style="width:100%;">Зарегистрироваться</button><p style="margin-top:1rem;">Есть аккаунт? <a id="toLogin" style="color:var(--primary);cursor:указатель;">Войти</a></p></div>`; document.getElementById('regSubmit').addEventListener('click', ()=>{const u=document.getElementById('regUsername').value.trim(); const p=document.getElementById('regPassword').value; const err=document.getElementById('regError'); const res=registerUser(u,p); if(!res.success){err.textContent=res.message; err.classList.add('показать');} else { err.classList.remove('показать'); State.CurrentUser={имя пользователя: u, роль:'пользователь'}; State.currentPage='панель мониторинга'; renderApp(); }}); document.getElementById(' toLogin').addEventListener('click', ()=> навигация ('login')); }
+            function renderNavbar() {
+                const nav = document.getElementById('mainNav');
+                if (!nav) return;
+                const user = State.currentUser;
+                const isAdmin = user?.role === 'admin';
+                let leftLinks = '', rightActions = '';
 
- function showWelcomeScreen() {
- const ws = document.getElementById('welcomeScreen');
- if (!ws) return;
- if (State.welcomeShown) { ws.classList.add('fade-out'); setTimeout(()=>ws.style.display='none',500); return; }
- ws.style.display='flex';
- document.getElementById('startExploring')?.addEventListener('click', ()=>{ State.welcomeShown=true; saveState(); ws.classList.add('fade-out'); setTimeout(()=>{ws.style.display='none'; if(State.currentUser&&State.currentPage==='landing') State.currentPage=State.currentUser.role==='admin'?'admin':'dashboard'; renderApp(); },500); });
- }
+                if (!user) {
+                    leftLinks = `<a class="nav-link" data-page="landing">Главная</a><a class="nav-link" data-page="courses">Курсы</a><a class="nav-link" data-page="about">О платформе</a>`;
+                    rightActions = `<button class="btn-outline" id="btnLoginNav">Войти</button><button class="btn-primary" id="btnRegisterNav">Регистрация</button>`;
+                } else {
+                    leftLinks = isAdmin ? `<a class="nav-link" data-page="admin">Dashboard</a><a class="nav-link" data-page="admin">Пользователи</a><a class="nav-link" data-page="admin">Курсы</a>` : `<a class="nav-link" data-page="dashboard">Dashboard</a><a class="nav-link" data-page="courses">Курсы</a><a class="nav-link" data-page="about">О платформе</a>`;
+                    rightActions = `<span class="user-badge">${user.username}</span>${!isAdmin ? '<button class="admin-switch" id="btnToAdmin">Админ</button>' : ''}${isAdmin ? '<button class="btn-outline" id="btnToUser">Пользователь</button>' : ''}<button class="btn-outline" id="btnLogout">Выйти</button>`;
+                }
 
- loadState();
- showWelcomeScreen();
- if (State.welcomeShown) {
- document.getElementById('welcomeScreen').style.display='none';
- if (State.currentUser && State.currentPage==='landing') State.currentPage = State.currentUser.role==='admin'?'admin':'dashboard';
- renderApp();
- }
- })();
- </script>
+                nav.innerHTML = `<div class="logo"><span class="logo-icon">U</span>UniUnpins</div><div class="nav-links">${leftLinks}</div><div class="nav-actions">${rightActions}</div>`;
+                document.querySelectorAll('.nav-link').forEach(el => el.addEventListener('click', e => { e.preventDefault(); const p = el.dataset.page; if (p === 'admin') user?.role === 'admin' ? (State.adminSubPage='dashboard', navigate('admin')) : navigate('login'); else navigate(p); }));
+                document.querySelector('.logo')?.addEventListener('click', e => { e.preventDefault(); State.currentUser ? navigate(State.currentUser.role==='admin'?'admin':'dashboard') : navigate('landing'); });
+                if (!user) {
+                    document.getElementById('btnLoginNav')?.addEventListener('click', () => navigate('login'));
+                    document.getElementById('btnRegisterNav')?.addEventListener('click', () => navigate('register'));
+                } else {
+                    document.getElementById('btnLogout')?.addEventListener('click', logout);
+                    document.getElementById('btnToAdmin')?.addEventListener('click', () => { State.currentUser.role='admin'; navigate('admin'); });
+                    document.getElementById('btnToUser')?.addEventListener('click', () => { State.currentUser.role='user'; navigate('dashboard'); });
+                }
+            }
+
+            function renderPage() {
+                const root = document.getElementById('appRoot');
+                if (!root) return;
+                const page = State.currentPage;
+                if (!State.currentUser && (page==='dashboard'||page==='admin'||page==='myCourse')) { navigate('login'); return; }
+                switch(page) {
+                    case 'landing': renderLanding(root); break;
+                    case 'dashboard': renderDashboard(root); break;
+                    case 'courses': renderCourses(root); break;
+                    case 'courseDetail': renderCourseDetail(root); break;
+                    case 'myCourse': renderMyCourse(root); break;
+                    case 'about': renderAbout(root); break;
+                    case 'admin': renderAdmin(root); break;
+                    case 'login': renderLogin(root); break;
+                    case 'register': renderRegister(root); break;
+                    default: renderLanding(root);
+                }
+            }
+
+            function renderLanding(c) { c.innerHTML = `<div class="hero"><h1>Учитесь новому каждый день</h1><p>Получите доступ к курсам по программированию, дизайну и видеомонтажу.</p><div style="display:flex; gap:1rem; justify-content:center;"><button class="btn-primary" id="heroStart">Начать бесплатно</button><button class="btn-outline" id="heroLogin">Войти</button></div></div><div class="course-grid">${coursesData.map(c=>`<div class="course-card" data-course="${c.id}"><h3>${c.title}</h3><p>${c.desc}</p></div>`).join('')}</div>`; document.getElementById('heroStart')?.addEventListener('click', ()=>navigate('register')); document.getElementById('heroLogin')?.addEventListener('click', ()=>navigate('login')); document.querySelectorAll('.course-card').forEach(card=>card.addEventListener('click', ()=>{const id=card.dataset.course; navigate('courseDetail', coursesData.find(c=>c.id===id));})); }
+            function renderDashboard(c) { const u = State.currentUser; c.innerHTML = `<h2>Добро пожаловать, ${u?.username||'Пользователь'}</h2><button class="btn-primary" id="startLearning" style="margin-bottom:2rem;">Начать обучение</button>${State.enrolledCourses.length?`<h3>Мои курсы</h3><div class="course-grid">${State.enrolledCourses.map(id=>{const co=coursesData.find(x=>x.id===id); return co?`<div class="course-card" data-course="${co.id}"><h3>${co.title}</h3><p>${co.desc}</p><div class="progress-bar"><div class="progress-fill" style="width:25%;"></div></div></div>`:'';}).join('')}</div>`:''}<h3>Доступные курсы</h3><div class="course-grid">${coursesData.map(c=>`<div class="course-card" data-course="${c.id}"><h3>${c.title}</h3><p>${c.desc}</p></div>`).join('')}</div>`; document.getElementById('startLearning')?.addEventListener('click', ()=>navigate('courses')); document.querySelectorAll('.course-card').forEach(card=>card.addEventListener('click', ()=>{const id=card.dataset.course; const co=coursesData.find(c=>c.id===id); State.enrolledCourses.includes(id)?navigate('myCourse',co):navigate('courseDetail',co);})); }
+            function renderCourses(c) { c.innerHTML = `<h2>Каталог курсов</h2><div class="course-grid">${coursesData.map(c=>`<div class="course-card" data-course="${c.id}"><h3>${c.title}</h3><p>${c.desc}</p></div>`).join('')}</div>`; document.querySelectorAll('.course-card').forEach(card=>card.addEventListener('click', ()=>{navigate('courseDetail', coursesData.find(c=>c.id===card.dataset.course));})); }
+            function renderCourseDetail(c) { const co = State.selectedCourse; if(!co) { navigate('courses'); return; } c.innerHTML = `<div class="breadcrumb"><span data-page="landing">Главная</span> / <span data-page="courses">Курсы</span> / ${co.title}</div><div class="course-detail"><h2>${co.title}</h2><p>${co.fullDesc}</p><h3>Программа</h3><div class="module-list">${co.modules.map(m=>`<div class="module-item"><h4>${m.title}</h4><p>${m.lessons.length} уроков</p></div>`).join('')}</div><button class="btn-primary" id="enrollBtn">Записаться</button><button class="btn-outline" id="backToCourses">Назад</button></div>`; document.querySelectorAll('.breadcrumb span').forEach(s=>s.addEventListener('click', ()=>navigate(s.dataset.page))); document.getElementById('backToCourses')?.addEventListener('click', ()=>navigate('courses')); document.getElementById('enrollBtn')?.addEventListener('click', ()=>enrollCourse(co.id)); }
+            function renderMyCourse(c) { const co = State.selectedCourse; if(!co) { navigate('dashboard'); return; } const lesson = State.currentLesson; c.innerHTML = `<div class="breadcrumb"><span data-page="dashboard">Dashboard</span> / ${co.title}</div><div class="course-detail"><h2>${co.title}</h2><div class="tabs"><div class="tab ${!lesson?'active':''}" id="tabProgram">Программа</div>${lesson?'<div class="tab active" id="tabLesson">Урок</div>':''}</div><div id="tabContent"></div></div>`; const tc = document.getElementById('tabContent'); if(!tc) return; if(!lesson) { tc.innerHTML = `<div class="module-list">${co.modules.map((m,mi)=>`<h4>${m.title}</h4>${m.lessons.map((l,li)=>`<div class="module-item lesson-link" data-module="${mi}" data-lesson="${li}"><p>${l}</p></div>`).join('')}`).join('')}</div>`; document.querySelectorAll('.lesson-link').forEach(el=>el.addEventListener('click', ()=>{State.currentLesson={module:parseInt(el.dataset.module),lesson:parseInt(el.dataset.lesson)}; renderApp();})); } else { const mod = co.modules[lesson.module]; const les = mod.lessons[lesson.lesson]; tc.innerHTML = `<button class="btn-outline" id="backToProgram">Назад</button><div class="lesson-content"><h4>${mod.title} — ${les}</h4><p>Материал урока по теме "${les}".</p><button class="btn-success" id="markDone">Пройдено</button></div>`; document.getElementById('backToProgram')?.addEventListener('click', ()=>{State.currentLesson=null; renderApp();}); document.getElementById('markDone')?.addEventListener('click', ()=>alert('Отмечено!')); } document.getElementById('tabProgram')?.addEventListener('click', ()=>{State.currentLesson=null; renderApp();}); }
+            function renderAbout(c) { c.innerHTML = `<div class="about-section"><h2>О платформе</h2><p>UniUnpins — платформа для онлайн-обучения в сфере IT.</p><p>Мы делаем образование доступным.</p></div><div class="about-section"><h2>Контакты</h2><p>Новосибирский колледж печати и информационных технологий</p></div>`; }
+            function renderAdmin(c) { const sub = State.adminSubPage||'dashboard'; c.innerHTML = `<div class="admin-layout"><div class="admin-sidebar"><h3 style="color:white;">Админ</h3><button data-sub="dashboard">Dashboard</button><button data-sub="users">Пользователи</button><button data-sub="courses">Курсы</button><button data-sub="analytics">Аналитика</button></div><div class="admin-main" id="adminContent"></div></div>`; const ac = document.getElementById('adminContent'); if(!ac) return; switch(sub) { case 'dashboard': ac.innerHTML=`<h2>Панель</h2><div class="stats-grid"><div class="stat-card"><strong>Пользователи</strong><span>${usersDB.length}</span></div><div class="stat-card"><strong>Курсы</strong><span>${coursesData.length}</span></div></div>`; break; case 'users': ac.innerHTML=`<h2>Пользователи</h2><table class="admin-table">${usersDB.map(u=>`<tr><td>${u.username}</td><td>${u.role}</td></tr>`).join('')}</table>`; break; case 'courses': ac.innerHTML=`<h2>Курсы</h2><table class="admin-table">${coursesData.map(c=>`<tr><td>${c.title}</td><td>${c.desc}</td></tr>`).join('')}</table>`; break; case 'analytics': ac.innerHTML=`<h2>Аналитика</h2><div class="stats-grid"><div class="stat-card"><strong>Просмотры</strong><span>12k</span></div></div>`; break; } document.querySelectorAll('.admin-sidebar button').forEach(b=>b.addEventListener('click', ()=>{State.adminSubPage=b.dataset.sub; renderApp();})); }
+            function renderLogin(c) { c.innerHTML = `<div class="auth-form"><h2>Вход</h2><input id="loginUsername" placeholder="Логин"><input id="loginPassword" type="password" placeholder="Пароль"><div class="error-message" id="loginError"></div><button class="btn-primary" id="loginSubmit" style="width:100%;">Войти</button><p style="margin-top:1rem;"><a id="toRegister" style="color:var(--primary);cursor:pointer;">Регистрация</a></p></div>`; document.getElementById('loginSubmit').addEventListener('click', ()=>{const u=document.getElementById('loginUsername').value.trim(); const p=document.getElementById('loginPassword').value; const err=document.getElementById('loginError'); if(!u||!p){err.textContent='Введите данные'; err.classList.add('show'); return;} if(!loginUser(u,p)){err.textContent='Неверные данные'; err.classList.add('show');} else err.classList.remove('show');}); document.getElementById('toRegister').addEventListener('click', ()=>navigate('register')); }
+            function renderRegister(c) { c.innerHTML = `<div class="auth-form"><h2>Регистрация</h2><input id="regUsername" placeholder="Логин"><input id="regPassword" type="password" placeholder="Пароль"><div class="error-message" id="regError"></div><button class="btn-primary" id="regSubmit" style="width:100%;">Зарегистрироваться</button><p style="margin-top:1rem;"><a id="toLogin" style="color:var(--primary);cursor:pointer;">Войти</a></p></div>`; document.getElementById('regSubmit').addEventListener('click', ()=>{const u=document.getElementById('regUsername').value.trim(); const p=document.getElementById('regPassword').value; const err=document.getElementById('regError'); const res=registerUser(u,p); if(!res.success){err.textContent=res.message; err.classList.add('show');} else { err.classList.remove('show'); State.currentUser={username:u,role:'user'}; State.currentPage='dashboard'; renderApp(); }}); document.getElementById('toLogin').addEventListener('click', ()=>navigate('login')); }
+
+            function showWelcomeScreen() {
+                const ws = document.getElementById('welcomeScreen');
+                if (!ws) return;
+                if (State.welcomeShown) { ws.classList.add('fade-out'); setTimeout(()=>ws.style.display='none',500); return; }
+                ws.style.display='flex';
+                document.getElementById('startExploring')?.addEventListener('click', ()=>{
+                    State.welcomeShown = true;
+                    saveState();
+                    ws.classList.add('fade-out');
+                    setTimeout(() => {
+                        ws.style.display = 'none';
+                        if (State.currentUser && State.currentPage === 'landing') {
+                            State.currentPage = State.currentUser.role === 'admin' ? 'admin' : 'dashboard';
+                        }
+                        renderApp();
+                    }, 500);
+                });
+            }
+
+            loadState();
+            showWelcomeScreen();
+            if (State.welcomeShown) {
+                document.getElementById('welcomeScreen').style.display = 'none';
+                if (State.currentUser && State.currentPage === 'landing') {
+                    State.currentPage = State.currentUser.role === 'admin' ? 'admin' : 'dashboard';
+                }
+                renderApp();
+            }
+        })();
+    </script>
 </body>
-3123
 </html>
